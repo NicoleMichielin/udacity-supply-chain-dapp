@@ -12,7 +12,7 @@ contract RetailerRole {
   // Define a struct 'retailers' by inheriting from 'Roles' library, struct Role
 
   // In the constructor make the address that deploys this contract the 1st retailer
-  constructor() public {
+  constructor() {
     
   }
 
