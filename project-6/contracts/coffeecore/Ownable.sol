@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.19;
 
 /// Provides basic authorization control
@@ -9,7 +9,7 @@ contract Ownable {
     event TransferOwnership(address indexed oldOwner, address indexed newOwner);
 
     /// Assign the contract to an owner
-    constructor () internal {
+    constructor () {
         origOwner = msg.sender;
         emit TransferOwnership(address(0), origOwner);
     }
@@ -21,7 +21,7 @@ contract Ownable {
 
     /// Define a function modifier 'onlyOwner'
     modifier onlyOwner() {
-        require(isOwner());
+        require(isOwner(), "Ownable: caller is not the owner");
         _;
     }
 
@@ -43,7 +43,7 @@ contract Ownable {
 
     /// Define an internal function to transfer ownership
     function _transferOwnership(address newOwner) internal {
-        require(newOwner != address(0));
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit TransferOwnership(origOwner, newOwner);
         origOwner = newOwner;
     }
