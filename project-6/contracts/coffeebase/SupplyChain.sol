@@ -1,37 +1,37 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.19;
 
+import "../coffeeaccesscontrol/RetailerRole.sol";
+import "../coffeeaccesscontrol/DistributorRole.sol";
+import "../coffeeaccesscontrol/FarmerRole.sol";
+import "../coffeeaccesscontrol/ConsumerRole.sol";
+
 // Define a contract 'SupplyChain'
-contract SupplyChain {
+contract SupplyChain is RetailerRole, FarmerRole, DistributorRole, ConsumerRole {
 
   // Define 'owner'
-  address owner;
-
-  // Define a variable called 'upc' for Universal Product Code (UPC)
-  uint  upc;
-
-  // Define a variable called 'sku' for Stock Keeping Unit (SKU)
-  uint  sku;
-
-  // Define a public mapping 'items' that maps the UPC to an Item.
-  mapping (uint => Item) items;
-
-  // Define a public mapping 'itemsHistory' that maps the UPC to an array of TxHash, 
-  // that track its journey through the supply chain -- to be sent from DApp.
-  mapping (uint => string[]) itemsHistory;
-  
-  // Define enum 'State' with the following values:
-  enum State 
-  { 
-    Harvested,  // 0
-    Processed,  // 1
-    Packed,     // 2
-    ForSale,    // 3
-    Sold,       // 4
-    Shipped,    // 5
-    Received,   // 6
-    Purchased   // 7
-  }
+    address owner;
+    // Define a variable called 'upc' for Universal Product Code (UPC)
+    uint  upc;
+    // Define a variable called 'sku' for Stock Keeping Unit (SKU)
+    uint  sku;
+    // Define a public mapping 'items' that maps the UPC to an Item.
+    mapping(uint => Item) items;
+    // Define a public mapping 'itemsHistory' that maps the UPC to an array of TxHash,
+    // that track its journey through the supply chain -- to be sent from DApp.
+    mapping(uint => string[]) itemsHistory;
+    // Define enum 'State' with the following values:
+    enum State
+    {
+        Harvested, // 0
+        Processed, // 1
+        Packed, // 2
+        ForSale, // 3
+        Sold, // 4
+        Shipped, // 5
+        Received, // 6
+        Purchased  // 7
+    }
 
   State constant defaultState = State.Harvested;
 
@@ -62,6 +62,7 @@ contract SupplyChain {
   event Sold(uint upc);
   event Shipped(uint upc);
   event Received(uint upc);
+  event Tagged(uint upc);
   event Purchased(uint upc);
 
   // Define a modifier that checks to see if msg.sender == owner of the contract
@@ -161,12 +162,12 @@ contract SupplyChain {
     string memory _originFarmLatitude, 
     string memory _originFarmLongitude, 
     string memory _productNotes
-  ) public {
+  ) onlyFarmer  public {
     // Add the new item as part of Harvest
     items[_upc] = Item({
       sku: sku,
       upc: _upc,
-      ownerID: _originFarmerID,
+      ownerID: msg.sender,
       originFarmerID: _originFarmerID,
       originFarmName: _originFarmName,
       originFarmInformation: _originFarmInformation,
@@ -241,14 +242,18 @@ contract SupplyChain {
     forSale(_upc)
     paidEnough(items[_upc].productPrice)
     checkValue(_upc)
+    onlyDistributor
   {
+    address buyer = msg.sender;
+    uint price = items[_upc].productPrice;
+
     // Update the appropriate fields
-    items[_upc].ownerID = msg.sender;
-    items[_upc].distributorID = msg.sender;
+    items[_upc].ownerID = buyer;
+    items[_upc].distributorID = buyer;
     items[_upc].itemState = State.Sold;
 
     // Transfer money to farmer
-    payable(items[_upc].originFarmerID).transfer(items[_upc].productPrice);
+    payable(items[_upc].originFarmerID).transfer(price);
 
     // Emit the appropriate event
     emit Sold(_upc);
@@ -277,9 +282,10 @@ contract SupplyChain {
   function receiveItem(uint _upc) public 
     shipped(_upc)
   {
+    address retailerID = msg.sender;
     // Update the appropriate fields - ownerID, retailerID, itemState
-    items[_upc].ownerID = msg.sender;
-    items[_upc].retailerID = msg.sender;
+    items[_upc].ownerID = retailerID;
+    items[_upc].retailerID = retailerID;
     items[_upc].itemState = State.Received;
 
     // Emit the appropriate event
@@ -293,9 +299,10 @@ contract SupplyChain {
   function purchaseItem(uint _upc) public 
     received(_upc)
   {
+    address consumerID = msg.sender;
     // Update the appropriate fields - ownerID, consumerID, itemState
-    items[_upc].ownerID = msg.sender;
-    items[_upc].consumerID = msg.sender;
+    items[_upc].ownerID = consumerID;
+    items[_upc].consumerID = consumerID;
     items[_upc].itemState = State.Purchased;
 
     // Emit the appropriate event
