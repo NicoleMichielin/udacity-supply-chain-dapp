@@ -160,7 +160,10 @@ App = {
             case 10:
                 return await App.fetchItemBufferTwo(event);
                 break;
+            /*case 11:
+                return await App.addAbility();*/
             }
+            
     },
 
     harvestItem: function(event) {
@@ -176,6 +179,7 @@ App = {
                 App.originFarmLatitude, 
                 App.originFarmLongitude, 
                 App.productNotes
+                //{gas: 3000000}
             );
         }).then(function(result) {
             $("#ftc-item").text(result);
