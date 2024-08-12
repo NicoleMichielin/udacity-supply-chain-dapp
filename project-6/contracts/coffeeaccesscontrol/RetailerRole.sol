@@ -4,11 +4,6 @@ pragma solidity >=0.8.19;
 // Import the library 'Roles'
 import "./Roles.sol";
 
-pragma solidity >=0.8.19;
-
-// Import the library 'Roles'
-import "./Roles.sol";
-
 // Define a contract 'RetailerRole' to manage this role - add, remove, check
 contract RetailerRole {
   using Roles for Roles.Role;
