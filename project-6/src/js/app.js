@@ -17,6 +17,40 @@ App = {
     retailerID: "0x0000000000000000000000000000000000000000",
     consumerID: "0x0000000000000000000000000000000000000000",
 
+    //from https://knowledge.udacity.com/questions/1032562
+    initWeb3: async function () {
+        /// Find or Inject Web3 Provider
+        /// Modern dapp browsers...
+        if (window.ethereum) {
+            App.web3Provider = window.ethereum;
+            try {
+                // Request account access
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+            } catch (error) {
+                // User denied account access...
+                console.error("User denied account access")
+            }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+            App.web3Provider = window.web3.currentProvider;
+        }
+        // If no injected web3 instance is detected, fall back to Ganache
+        else {
+            App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+        }
+        App.getMetaskAccountID();
+        return App.initSupplyChain();
+    },
+    getMetaskAccountID: async function() {
+        web3 = new Web3(App.web3Provider);
+        const accounts = await web3.eth.getAccounts();
+        console.log('getMetaskID:',accounts);
+        App.metamaskAccountID = accounts[0];
+    },
+    // end of mentor's code
+
+    
     init: async function () {
         App.readForm();
         /// Setup access to blockchain
