@@ -1,3 +1,25 @@
+### Truffle version
+5.11.5
+
+### node version
+18.18.2
+
+### web3 version
+4.11.1
+
+### contract address and transaction ID
+Address:
+Transaction ID:
+
+### Libraries
+The library is Roles, usefull for managing access controls. 
+
+### IPFS
+No IFPS has been used in this project.
+
+### ------------------------------------------------------------ ###
+
+
 # Supply chain & data auditing
 
 This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Seller and Buyer. The user story is similar to any commonly used supply chain process. A Seller can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.

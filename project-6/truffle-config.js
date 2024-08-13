@@ -22,6 +22,7 @@ module.exports = {
         shareNonce: true,
       }),
       network_id: 11155111,  // Sepolia's id
+      gas: 8000000,
       confirmations: 2,      // # of confirmations to wait between deployments
       timeoutBlocks: 500,    // # of blocks before a deployment times out
       skipDryRun: true,      // Skip dry run before migrations
