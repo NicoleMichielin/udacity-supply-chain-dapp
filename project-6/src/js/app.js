@@ -1,3 +1,5 @@
+const Web3 = require('web3');
+
 App = {
     web3Provider: null,
     contracts: {},
